@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #07111c;
+  --paper: #f4efe4;
+  --paper-dim: rgba(244, 239, 228, 0.72);
+  --line: rgba(176, 214, 255, 0.38);
+  --cyan: #c5dff8;
+  --gold: #e4c27a;
+  --warn: #ffc7b0;
+  color-scheme: dark;
+}
+
+html {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+body {
+  min-height: 100vh;
+  background: transparent;
+  font-family: var(--font-sans), sans-serif;
+}
+
+::selection {
+  background: rgba(228, 194, 122, 0.35);
+  color: var(--paper);
+}
+
+a {
+  text-underline-offset: 0.18em;
+}
+
+:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.serif {
+  font-family: var(--font-serif), serif;
+  font-weight: 450;
+  letter-spacing: -0.03em;
+}
+
+.mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.sheet {
+  background: linear-gradient(90deg, rgba(7, 17, 28, 0.92) 0%, rgba(7, 17, 28, 0.86) 52%, rgba(7, 17, 28, 0.62) 100%);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field > span,
+.quiet-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cyan);
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--paper);
+  padding: 0.6rem 0;
+  font: inherit;
+}
+
+.field textarea {
+  border: 1px solid var(--line);
+  min-height: 8rem;
+  padding: 0.75rem;
+}
+
+.field select option {
+  background: #0b1c31;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(244, 239, 228, 0.75);
+  padding: 0.65rem 1rem;
+  font-size: 0.92rem;
+  line-height: 1;
+  color: var(--paper);
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.btn:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.btn-quiet {
+  border-color: var(--line);
+  color: var(--cyan);
+}
+
+.rule {
+  border-color: var(--line);
+}
+
+.blueprint-sheet[data-assembling="true"] [data-arrive] {
+  opacity: clamp(0, calc((var(--assemble, 0) - 0.55) / 0.45), 1);
+}
