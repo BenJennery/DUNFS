@@ -1,4 +1,5 @@
 import { Flash } from "@/components/chrome";
+import { membershipLabel } from "@/lib/copy";
 import { updateMember } from "@/lib/actions";
 import { adminMembers } from "@/lib/data";
 
@@ -16,7 +17,7 @@ export default async function AdminMembersPage({
     <div>
       <h1 className="serif text-5xl">Members</h1>
       <p className="mt-3 max-w-lg text-sm text-[var(--paper-dim)]">
-        Committee and admin are roles. “On the site” publishes someone in the public member section.
+        Roles control the desk. Membership is Durham University or Affiliate. “On the site” publishes someone in the public member section.
       </p>
       <Flash notice={params.notice} error={params.error || error} />
       <ul className="mt-8 space-y-8">
@@ -35,6 +36,16 @@ export default async function AdminMembersPage({
                   <option value="member">Member</option>
                   <option value="committee">Committee</option>
                   <option value="admin">Admin</option>
+                </select>
+              </label>
+              <label className="field">
+                <span>Membership</span>
+                <select name="membership" defaultValue={person.membership || "affiliate"}>
+                  {Object.entries(membershipLabel).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
                 </select>
               </label>
               <label className="field">

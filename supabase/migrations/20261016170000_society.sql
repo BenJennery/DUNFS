@@ -48,13 +48,18 @@ begin
     where lower(email) = lower(coalesce(new.email, ''))
   ) into allowed;
 
-  insert into public.profiles (id, email, full_name, course, role)
+  insert into public.profiles (id, email, full_name, course, role, membership)
   values (
     new.id,
     coalesce(new.email, ''),
     coalesce(new.raw_user_meta_data ->> 'full_name', ''),
     coalesce(new.raw_user_meta_data ->> 'course', ''),
-    case when allowed then 'admin' else 'member' end
+    case when allowed then 'admin' else 'member' end,
+    case
+      when lower(coalesce(new.raw_user_meta_data ->> 'membership', '')) = 'affiliate' then 'affiliate'
+      when lower(coalesce(new.email, '')) ~ '@([a-z0-9-]+\.)*durham\.ac\.uk$' then 'durham'
+      else 'affiliate'
+    end
   );
   return new;
 end;
@@ -73,6 +78,7 @@ begin
 
   if not private.is_admin() then
     new.role := old.role;
+    new.membership := old.membership;
     new.show_on_site := old.show_on_site;
     new.committee_title := old.committee_title;
     new.email := old.email;
@@ -119,6 +125,7 @@ create table public.profiles (
   full_name text not null default '',
   course text not null default '',
   role text not null default 'member' check (role in ('member', 'committee', 'admin')),
+  membership text not null default 'affiliate' check (membership in ('durham', 'affiliate')),
   committee_title text not null default '',
   bio text not null default '',
   show_on_site boolean not null default false,
@@ -232,7 +239,17 @@ create policy "members read directory"
 create policy "insert own member profile"
   on public.profiles for insert
   to authenticated
-  with check (id = (select auth.uid()) and role = 'member');
+  with check (
+    id = (select auth.uid())
+    and role = 'member'
+    and (
+      membership = 'affiliate'
+      or (
+        membership = 'durham'
+        and lower(email) ~ '@([a-z0-9-]+\.)*durham\.ac\.uk$'
+      )
+    )
+  );
 
 create policy "update own or admin profile"
   on public.profiles for update

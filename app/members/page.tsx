@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { membershipLabel } from "@/lib/copy";
 import { getMembers } from "@/lib/data";
 
 export const metadata = { title: "Members" };
@@ -27,7 +28,9 @@ export default async function MembersPage() {
                   {(person.committee_title || person.role).toUpperCase()}
                 </p>
                 <p className="serif mt-3 text-4xl">{person.full_name || "Member"}</p>
-                {person.course ? <p className="mt-2 text-sm text-[var(--paper-dim)]">{person.course}</p> : null}
+                <p className="mt-2 text-sm text-[var(--paper-dim)]">
+                  {[person.course, membershipLabel[person.membership]].filter(Boolean).join(" · ")}
+                </p>
                 {person.bio ? <p className="mt-4 text-sm leading-relaxed text-[var(--paper-dim)]">{person.bio}</p> : null}
               </li>
             ))}
@@ -45,7 +48,9 @@ export default async function MembersPage() {
               {ordered.map((person) => (
                 <li key={person.id} className="grid gap-2 border-b border-[var(--line)] py-4 md:grid-cols-12">
                   <span className="serif text-2xl md:col-span-5">{person.full_name || "Unnamed member"}</span>
-                  <span className="text-sm text-[var(--paper-dim)] md:col-span-4 md:pt-2">{person.course}</span>
+                  <span className="text-sm text-[var(--paper-dim)] md:col-span-4 md:pt-2">
+                    {[person.course, membershipLabel[person.membership]].filter(Boolean).join(" · ")}
+                  </span>
                   <span className="mono text-[11px] tracking-[0.14em] text-[var(--cyan)] md:col-span-3 md:pt-3 md:text-right">
                     {(person.committee_title || person.role).toUpperCase()}
                   </span>

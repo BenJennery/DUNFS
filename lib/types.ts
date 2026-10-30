@@ -1,4 +1,5 @@
 export type Role = "member" | "committee" | "admin";
+export type Membership = "durham" | "affiliate";
 export type Tier = "supporter" | "partner" | "principal";
 export type ActivityKind = "education" | "project" | "industry";
 
@@ -8,6 +9,7 @@ export type Profile = {
   full_name: string;
   course: string;
   role: Role;
+  membership: Membership;
   committee_title: string;
   bio: string;
   show_on_site: boolean;

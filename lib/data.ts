@@ -1,4 +1,4 @@
-import { defaultCopy } from "@/lib/copy";
+import { defaultCopy, isDurhamEmail } from "@/lib/copy";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 import type {
@@ -13,7 +13,7 @@ import type {
 } from "@/lib/types";
 
 const profileColumns =
-  "id, email, full_name, course, role, committee_title, bio, show_on_site, created_at";
+  "id, email, full_name, course, role, membership, committee_title, bio, show_on_site, created_at";
 const eventColumns =
   "id, title, slug, summary, details, location, starts_at, ends_at, published, rsvp_count";
 
@@ -53,6 +53,7 @@ export async function getSession(): Promise<Session> {
         email,
         full_name: "",
         role: "member",
+        membership: isDurhamEmail(email) ? "durham" : "affiliate",
       });
       const again = await supabase.from("profiles").select(profileColumns).eq("id", id).maybeSingle();
       profile = again.data;
@@ -96,7 +97,7 @@ export async function getHome() {
       .limit(4),
     supabase
       .from("profiles")
-      .select("id, full_name, course, role, committee_title, bio, show_on_site, created_at")
+      .select("id, full_name, course, role, membership, committee_title, bio, show_on_site, created_at")
       .eq("show_on_site", true)
       .order("full_name", { ascending: true }),
     supabase
@@ -159,14 +160,14 @@ export async function getMembers() {
   if (!supabase) return { session, committee: [] as Profile[], directory: [] as Profile[] };
   const committee = await supabase
     .from("profiles")
-    .select("id, full_name, course, role, committee_title, bio, show_on_site, created_at")
+    .select("id, full_name, course, role, membership, committee_title, bio, show_on_site, created_at")
     .eq("show_on_site", true)
     .order("full_name", { ascending: true });
   let directory: Profile[] = [];
   if (session.user) {
     const all = await supabase
       .from("profiles")
-      .select("id, full_name, course, role, committee_title, bio, show_on_site, created_at")
+      .select("id, full_name, course, role, membership, committee_title, bio, show_on_site, created_at")
       .order("full_name", { ascending: true });
     directory = (all.data ?? []) as Profile[];
   }

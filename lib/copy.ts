@@ -1,4 +1,4 @@
-import type { ActivityKind, SiteCopy, Tier } from "@/lib/types";
+import type { ActivityKind, Membership, SiteCopy, Tier } from "@/lib/types";
 
 export const defaultCopy: SiteCopy = {
   intro:
@@ -21,6 +21,17 @@ export const tierNote: Record<Tier, string> = {
   partner: "A short introduction at one gathering each term.",
   principal: "A year beside the society: speakers, travel, or a student build.",
 };
+
+export const membershipOrder: Membership[] = ["durham", "affiliate"];
+
+export const membershipLabel: Record<Membership, string> = {
+  durham: "Durham University",
+  affiliate: "Affiliate",
+};
+
+export function isDurhamEmail(email: string) {
+  return /@([a-z0-9-]+\.)*durham\.ac\.uk$/i.test(email.trim());
+}
 
 export const kindLabel: Record<ActivityKind, string> = {
   education: "Lectures",

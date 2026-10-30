@@ -78,7 +78,7 @@ export function Footer({ session }: { session: Session }) {
       <div className="mx-auto flex max-w-[1180px] flex-wrap items-end justify-between gap-6 px-5 py-8 md:px-8">
         <div>
           <p className="mono text-[11px] tracking-[0.18em] text-[var(--cyan)]">DURHAM FUSION SOCIETY</p>
-          <p className="mt-2 text-sm text-[var(--paper-dim)]">University of Durham</p>
+          <p className="mt-2 text-sm text-[var(--paper-dim)]">Affiliated with Durham University</p>
         </div>
         <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
           {email ? <a href={`mailto:${email}`}>{email}</a> : null}

@@ -6,7 +6,8 @@ import { redirect } from "next/navigation";
 import { isSupabaseConfigured, publicKey, supabaseUrl } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 import { londonLocalToIso } from "@/lib/time";
-import type { ActivityKind, Role, Tier } from "@/lib/types";
+import { isDurhamEmail } from "@/lib/copy";
+import type { ActivityKind, Membership, Role, Tier } from "@/lib/types";
 
 function field(formData: FormData, name: string, max = 500) {
   return String(formData.get(name) ?? "").trim().slice(0, max);
@@ -72,14 +73,19 @@ export async function signUp(formData: FormData) {
   const password = String(formData.get("password") ?? "");
   const fullName = field(formData, "full_name", 120);
   const course = field(formData, "course", 120);
+  const membership = field(formData, "membership", 20);
   if (!fullName) redirect("/join?error=Add+your+name");
   if (password.length < 8) redirect("/join?error=Use+at+least+8+characters");
+  if (membership !== "durham" && membership !== "affiliate") redirect("/join?error=Choose+a+membership");
+  if (membership === "durham" && !isDurhamEmail(email)) {
+    redirect("/join?error=Durham+University+membership+uses+a+durham.ac.uk+email.+Choose+Affiliate+for+any+other+address");
+  }
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { full_name: fullName, course },
+      data: { full_name: fullName, course, membership },
       emailRedirectTo: `${await origin()}/auth/callback`,
     },
   });
@@ -231,16 +237,24 @@ export async function deleteEvent(formData: FormData) {
 }
 
 const roles: Role[] = ["member", "committee", "admin"];
+const memberships: Membership[] = ["durham", "affiliate"];
 
 export async function updateMember(formData: FormData) {
   const id = field(formData, "id", 40);
   const role = field(formData, "role", 20) as Role;
+  const membership = field(formData, "membership", 20) as Membership;
   if (!roles.includes(role)) redirect("/admin/members?error=Unknown+role");
+  if (!memberships.includes(membership)) redirect("/admin/members?error=Unknown+membership");
   const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  if (data?.claims?.sub === id && role !== "admin") {
+    redirect("/admin/members?error=Keep+your+own+admin+access%2C+or+ask+another+admin+to+change+it");
+  }
   const { error } = await supabase
     .from("profiles")
     .update({
       role,
+      membership,
       committee_title: field(formData, "committee_title", 80),
       show_on_site: formData.get("show_on_site") === "on",
     })
